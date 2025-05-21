@@ -1,0 +1,54 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for Track MySchool Bus Application",
+  "keywords": [
+    "Track"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "Track MySchool Bus"
+  },
+  "license": "ISC",
+  "author": "Laxman Shrestha",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "start:prod": "node ./dist/app.js",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.2",
+    "@types/helmet": "^0.0.48",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.15.20",
+    "@types/request": "^2.48.12",
+    "@types/typescript": "^0.4.29",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0",
+    "mysql2": "^3.14.1",
+    "path": "^0.12.7",
+    "reflect-metadata": "^0.2.2",
+    "request": "^2.88.2",
+    "typeorm": "^0.3.24",
+    "winston": "^3.17.0",
+    "zod": "^3.25.7"
+  }
+}
