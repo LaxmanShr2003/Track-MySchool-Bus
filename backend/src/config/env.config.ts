@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 dotenv.config();
 
 export const env = {
@@ -18,6 +18,4 @@ export const env = {
   //access paths
 
   ACCESS_PATH: process.env.ACCESS_PATH,
-
-
 };
