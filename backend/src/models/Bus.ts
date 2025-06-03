@@ -1,6 +1,6 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
-import { Driver } from "./Driver";
-import { BusRoute } from "./BusRoute";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+
+import { RouteAssignment } from "./RouteAssignment";
 
 @Entity()
 export class Bus {
@@ -25,13 +25,6 @@ export class Bus {
   })
   plateNumber: string;
 
-  @OneToOne(() => Driver, (driver) => driver.bus, {
-    cascade: true,
-    onDelete: "CASCADE",
-  })
-  driver: Driver;
-
-  @OneToOne(() => BusRoute, (busRoute) => busRoute.bus)
-  @JoinColumn()
-  busRoute: BusRoute;
+  @OneToMany(() => RouteAssignment, (assignment) => assignment.bus)
+  routeAssignment: RouteAssignment[];
 }

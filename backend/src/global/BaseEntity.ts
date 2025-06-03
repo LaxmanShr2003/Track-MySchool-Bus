@@ -18,7 +18,22 @@ export class BaseUserEntity {
 
   @Column({
     type: "varchar",
+    length: 20,
     nullable: false,
+  })
+  firstName: string;
+
+  @Column({
+    type: "varchar",
+    length: 20,
+    nullable: false,
+  })
+  lastName: string;
+
+  @Column({
+    type: "varchar",
+    nullable: false,
+    unique: true,
   })
   userName: string;
 
@@ -31,12 +46,14 @@ export class BaseUserEntity {
   @Column({
     type: "varchar",
     nullable: false,
+    unique: true,
   })
   mobileNumber: string;
 
   @Column({
     type: "varchar",
     nullable: false,
+    unique: true,
   })
   email: string;
 
@@ -45,6 +62,12 @@ export class BaseUserEntity {
     nullable: false,
   })
   password: string;
+
+  @Column({
+    type: "varchar",
+    nullable: false,
+  })
+  address: string;
 
   @Column({
     type: "enum",

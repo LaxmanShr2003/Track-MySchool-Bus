@@ -24,7 +24,10 @@ export const validateToken = (options: ValidationOptions = {}) => {
       if (!token) throw new Exception("Token missing", 401);
 
       // Verify token
-      const decoded = JWT.verify<TokenPayload>(token,accessType["ACCESS"]as string);
+      const decoded = JWT.verify<TokenPayload>(
+        token,
+        accessType["ACCESS"] as string
+      );
       if (!decoded) throw new Exception("Invalid token", 401);
 
       // Attach decoded payload to request

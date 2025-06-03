@@ -3,11 +3,11 @@ import {
   CreateStudentSchemaType,
   StudentEmailSchemaType,
   StudentIdSchemaType,
+  StudentMobileNumberSchemaType,
 } from "./student.schema";
 import { studentService } from "./student.service";
 import { messageFormater } from "../../libs/messageFormater";
 import { Exception } from "../../libs/exceptionHandler";
-import { MulterHelper } from "../../middlewares/multer";
 
 export const StudentController = {
   addStudent: async (
@@ -16,26 +16,18 @@ export const StudentController = {
     next: NextFunction
   ) => {
     try {
+      if (!req.file) {
+        throw new Exception("Image is required", 400);
+      }
 
-
-       if (!req.file) {
-  console.log("Image validation failed");
-  throw new Exception("Image is required", 400);
-}
-
-const profileImg = req.file.filename;
+      const profileImg = req.file.filename;
       if (!profileImg) {
-        console.log("profile extraction failed");
         throw new Exception("Please insert image", 400);
       }
 
-
       const studentData = req.body;
-    const imageUrl = `${req.protocol}://${req.get("host")}/public/${req.file.filename}`;
+      const imageUrl = `${req.protocol}://${req.get("host")}/public/${req.file.filename}`;
 
-
-   
-    
       const response = await studentService.addStudent(studentData, imageUrl);
       res
         .status(201)
@@ -76,7 +68,26 @@ const profileImg = req.file.filename;
   ) => {
     try {
       const { id } = req.params;
-      const response = await studentService.findStudentById({ id });
+      const response = await studentService.findStudentById(id);
+      res
+        .status(201)
+        .json(
+          messageFormater(true, response, "Successfully fetched the user", 200)
+        );
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  findByMobileNumber: async (
+    req: Request<StudentMobileNumberSchemaType, {}, {}>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { mobileNumber } = req.params;
+      const response =
+        await studentService.findStudentByMobileNumber(mobileNumber);
       res
         .status(201)
         .json(
@@ -112,9 +123,24 @@ const profileImg = req.file.filename;
   ) => {
     try {
       const id = req.params.id;
-      const data = req.body;
+      const studentData = req.body;
 
-      const response = await studentService.updateUser({ id }, data);
+      let imageUrl: string | undefined = undefined;
+
+      if (req.file) {
+        imageUrl = `${req.protocol}://${req.get("host")}/public/${req.file.filename}`;
+      }
+
+      // Merge imageUrl if it exists
+      const updatedData = imageUrl
+        ? { ...studentData, profileImageUrl: imageUrl }
+        : studentData;
+
+      const response = await studentService.updateUser(
+        id,
+        updatedData,
+        imageUrl
+      );
       res
         .status(201)
         .json(
@@ -135,7 +161,7 @@ const profileImg = req.file.filename;
       res
         .status(201)
         .json(
-          messageFormater(true, response, "Successfully updated user data", 200)
+          messageFormater(true, response, "Successfully deleted user data", 200)
         );
     } catch (error) {
       next(error);

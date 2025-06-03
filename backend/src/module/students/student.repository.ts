@@ -1,32 +1,31 @@
 import { date } from "zod";
 import { Runner } from "../../global/global";
-import { uniqueKey } from "../../libs/hash";
+import { generateCodePassword, uniqueKey } from "../../libs/hash";
 import { generateUniqueUsername } from "../../libs/usernameGenerator";
 import { Student } from "../../models/Student";
-import {
-  createStudentSchema,
-  CreateStudentSchemaType,
-  studentIdSchema,
-  StudentIdSchemaType,
-} from "./student.schema";
+import { CreateStudentSchemaType } from "./student.schema";
 
 export const StudentRepository = {
   insert: async ({
     runner,
     data,
     imgUrl,
-  }: Runner & { data: CreateStudentSchemaType, imgUrl:string }) => {
+  }: Runner & { data: CreateStudentSchemaType; imgUrl: string }) => {
     const repo = runner.manager.getRepository(Student);
-    const uniqueName = await generateUniqueUsername(data.firstName, data.mobileNumber);
-    console.log(uniqueName)
+    const uniqueName = await generateUniqueUsername(
+      data.firstName,
+      data.mobileNumber
+    );
+
     try {
       const response = await repo.save({
         id: uniqueKey(),
         userName: uniqueName,
-        profileImageUrl:imgUrl,
-        isActive:true,
-        createdAt:new Date(),
-        updatedAt:new Date(),
+        profileImageUrl: imgUrl,
+        password: generateCodePassword("STUDENT", data.mobileNumber),
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
         ...data,
       });
 
@@ -36,12 +35,12 @@ export const StudentRepository = {
     }
   },
 
-  findById: async ({ runner, id }: Runner & { id: StudentIdSchemaType }) => {
+  findById: async ({ runner, id }: Runner & Pick<Student, "id">) => {
     const repo = runner.manager.getRepository(Student);
     try {
       const response = await repo.findOne({
         where: {
-          id: id.id,
+          id: id,
         },
       });
       return response;
@@ -133,14 +132,14 @@ export const StudentRepository = {
     runner,
     id,
     data,
-  }: Runner & { id: StudentIdSchemaType; data: CreateStudentSchemaType }) => {
+  }: Runner & { id: string; data: any }) => {
     const repo = runner.manager.getRepository(Student);
     try {
       const response = await repo.update(id, data);
 
-      const result = await repo.findById({
+      const result = await repo.findOne({
         where: {
-          id: id.id,
+          id: id,
         },
       });
       return result;

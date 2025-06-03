@@ -4,6 +4,7 @@ import { Student } from "../models/Student";
 import { BusRoute } from "../models/BusRoute";
 import { Bus } from "../models/Bus";
 import { Driver } from "../models/Driver";
+import { RouteAssignment } from "../models/RouteAssignment";
 
 
 
@@ -16,14 +17,14 @@ export const AppDataSource: DataSource = new DataSource({
   database: env.DB_NAME,
   synchronize: false,
   logging: false,
-  // dropSchema: true,
-  entities: [Student,BusRoute,Bus,Driver]
+  //dropSchema: true,
+  entities: [Student,BusRoute,Bus,Driver,RouteAssignment]
 });
 
 export const initializeDataSource = async () => {
   try {
-    (await AppDataSource.initialize()).runMigrations();
-   
+    (await AppDataSource.initialize());
+   //await AppDataSource.synchronize(true)
     console.log(`Datasource initialized successfully`);
   } catch (error) {
     console.log("Unable to connect datasource", error);

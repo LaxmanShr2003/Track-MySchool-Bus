@@ -1,0 +1,29 @@
+{
+  "name": "websocketserver",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "4"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "nodemon": "^3.1.10",
+    "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.8.1",
+    "ts-node": "^10.9.2",
+    "typeorm": "^0.3.24",
+    "typescript": "^5.8.3",
+    "zod": "^3.25.47"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29"
+  }
+}

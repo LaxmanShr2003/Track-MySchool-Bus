@@ -1,6 +1,5 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
-import { Bus } from "./Bus";
-import { Student } from "./Student";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { RouteAssignment } from "./RouteAssignment";
 
 @Entity()
 export class BusRoute {
@@ -17,12 +16,6 @@ export class BusRoute {
   })
   routeName: string;
 
-  @OneToOne(() => Bus, (bus) => bus.busRoute, {
-    cascade:true,
-    onDelete:"CASCADE"
-  })
-  bus: Bus;
-
-  @OneToMany(() => Student, (student) => student.busRoute)
-  students: Student[];
+  @OneToMany(() => RouteAssignment, (assignment) => assignment.busRoute)
+  routeAssignment: RouteAssignment[];
 }

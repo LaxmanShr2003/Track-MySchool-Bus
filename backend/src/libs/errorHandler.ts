@@ -1,19 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import { MulterError } from "multer";
-
 import { ZodError } from "zod";
-import unsync from "./unsync";
+import unsync, { unsyncFromPublic } from "./unsync";
 
 export const errorHandler = () => {
   return async (err: any, req: Request, res: Response, next: NextFunction) => {
+    // Clean up uploaded files if any
     if (req.file) {
       unsync(req.file.path);
+    }
+    if (req.file?.filename) {
+      unsyncFromPublic(req.file.filename);
     }
     if (req.files) {
       const files = req.files;
 
       if (Array.isArray(files)) {
-        files.forEach(async (item) => {
+        files.forEach((item) => {
           unsync(item.path);
         });
       } else {
@@ -21,7 +24,7 @@ export const errorHandler = () => {
           if (Object.prototype.hasOwnProperty.call(files, key)) {
             const elements = files[key];
             if (Array.isArray(elements)) {
-              elements.forEach(async (item) => {
+              elements.forEach((item) => {
                 unsync(item.path);
               });
             }
@@ -30,8 +33,12 @@ export const errorHandler = () => {
       }
     }
 
+    // Default values
+    err.statusCode = err.statusCode || 500;
+    err.status = err.status || "error";
+
+    // Multer error handling
     if (err instanceof MulterError) {
-      // Handle Multer errors
       let message;
       switch (err.code) {
         case "LIMIT_FILE_SIZE":
@@ -49,19 +56,24 @@ export const errorHandler = () => {
         default:
           message = "Multer error occurred.";
       }
-      return res.status(400).json({ error: message });
+       res.status(400).json({ status: "fail", message });
     }
 
+    // Zod validation error
     if (err instanceof ZodError) {
-      return res
-        .status(400)
-        .json({ error: "Validation error", details: err.issues });
+       res.status(400).json({ status: "fail", message: "Validation error", details: err.issues });
     }
 
+    // Database level error handling example
     if (err.level === "DB") {
-      return res.status(500).send({ error: "Internal Server Error" });
+       res.status(500).json({ status: "error", message: "Internal Server Error" });
     }
 
-    res.status(400).send({ error: err.message ? err.message : err });
+    // For all other errors
+     res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message || "Something went wrong",
+     stack: err.stack,
+    });
   };
 };

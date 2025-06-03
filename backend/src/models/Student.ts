@@ -1,30 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { BaseUserEntity } from "../global/BaseEntity";
 import { BusRoute } from "./BusRoute";
+import { RouteAssignment } from "./RouteAssignment";
 
 @Entity()
 export class Student extends BaseUserEntity {
-  @Column({
-    type: "varchar",
-    length: 20,
-    nullable: false,
-  })
-  firstName: string;
-
-  @Column({
-    type: "varchar",
-    length: 20,
-    nullable: false,
-  })
-  lastName: string;
-
-  @Column({
-    type: "varchar",
-    length: 20,
-    nullable: false,
-  })
-  Address: string;
-
   @Column({
     type: "varchar",
     nullable: false,
@@ -37,7 +17,10 @@ export class Student extends BaseUserEntity {
   })
   isActive: string;
 
-  @ManyToOne(() => BusRoute, (busRoute) => busRoute.students)
+  @OneToMany(
+    () => RouteAssignment,
+    (routeAssignment) => routeAssignment.students
+  )
   @JoinColumn()
-  busRoute: BusRoute;
+  routeAssignment: RouteAssignment[];
 }

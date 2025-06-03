@@ -6,16 +6,15 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import { env } from "./env.config";
 import { router } from "../shared";
+import { errorHandler } from "../libs/errorHandler";
 // import morgan from 'morgan'; // optional
 
 dotenv.config();
 
 export const initializeExpressServer = (app: Express) => {
-  // app.use(
-  //   '/static/',
-  //   express.static(path.join(process.env.PUBLIC_PATH as string, '/public/'))
-  // );
-  app.use("/static", express.static(path.join(env.ACCESS_PATH!)));
+
+
+  app.use("/public", express.static(path.join(env.ACCESS_PATH!)));
 
   app.use(morgan("dev"));
   app.use(helmet({ crossOriginResourcePolicy: false }));
@@ -24,6 +23,8 @@ export const initializeExpressServer = (app: Express) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   router(app);
+
+  app.use(errorHandler());
   const PORT = env.SERVER_PORT;
   app.listen(PORT, () => {
     console.log(`Server is running at port ${PORT}`);

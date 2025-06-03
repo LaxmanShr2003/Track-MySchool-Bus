@@ -1,20 +1,35 @@
+import {
+  checkUserUniqueness,
+  checkUserUniquenessForUpdate,
+  CheckUserUniquenessOptions,
+  CheckUserUniquenessOptionsForUpdate,
+} from "../../libs/checkUnique";
 import { Exception } from "../../libs/exceptionHandler";
 import ORMHelper from "../../libs/ORMHelper";
+import { unsyncFromPublic } from "../../libs/unsync";
 import { StudentRepository } from "./student.repository";
 import { CreateStudentSchemaType, StudentIdSchemaType } from "./student.schema";
 
 export const studentService = {
-  addStudent: async (data: CreateStudentSchemaType, img:string) => {
+  addStudent: async (data: CreateStudentSchemaType, img: string) => {
     const runner = await ORMHelper.createQueryRunner();
 
     try {
+      await checkUserUniqueness(runner, {
+        email: data.email,
+        mobileNumber: data.mobileNumber,
+      } as CheckUserUniquenessOptions);
       const isMobileNumberExists = await StudentRepository.findByMobileNumber({
         runner,
         mobileNumber: data.mobileNumber,
       });
       if (isMobileNumberExists)
         throw new Exception("Mobile number already exixts", 400);
-      const response = await StudentRepository.insert({ runner, data, imgUrl:img });
+      const response = await StudentRepository.insert({
+        runner,
+        data,
+        imgUrl: img,
+      });
       if (!response) throw new Exception("Unable to save student data", 400);
       return response;
     } catch (error) {
@@ -37,6 +52,15 @@ export const studentService = {
   deleteUser: async (id: string) => {
     const runner = await ORMHelper.createQueryRunner();
     try {
+      const existingStudent = await StudentRepository.findById({ runner, id });
+      if (existingStudent.profileImageUrl) {
+        const imageUrlParts = existingStudent.profileImageUrl.split("/");
+        const filename = imageUrlParts[imageUrlParts.length - 1];
+        unsyncFromPublic(filename);
+      } else {
+        throw new Exception("Unable to delete student profile image", 400);
+      }
+
       const response = await StudentRepository.deleteStudent({ runner, id });
       if (response.affected === 0)
         throw new Exception("Unable to delete user data", 400);
@@ -47,7 +71,7 @@ export const studentService = {
     }
   },
 
-  findStudentById: async (id: StudentIdSchemaType) => {
+  findStudentById: async (id: string) => {
     const runner = await ORMHelper.createQueryRunner();
     try {
       const response = await StudentRepository.findById({ runner, id });
@@ -71,7 +95,7 @@ export const studentService = {
     }
   },
 
-  findUserByMobileNumber: async (mobileNumber: string) => {
+  findStudentByMobileNumber: async (mobileNumber: string) => {
     const runner = await ORMHelper.createQueryRunner();
     try {
       const response = await StudentRepository.findByMobileNumber({
@@ -86,29 +110,48 @@ export const studentService = {
     }
   },
 
-  updateUser: async (
-    id: StudentIdSchemaType,
-    data: CreateStudentSchemaType
-  ) => {
+  updateUser: async (id: string, data: any, imagePath?: string) => {
     const runner = await ORMHelper.createQueryRunner();
     try {
       const isIdExists = await StudentRepository.findById({ runner, id });
-      if (!isIdExists) throw new Exception("User doesnot exists", 400);
+      if (!isIdExists) throw new Exception("Student doesnot exists", 400);
 
-      const isMobileNumberExists = await StudentRepository.findByMobileNumber({
-        runner,
-        mobileNumber: data.mobileNumber,
-      });
-      if (isMobileNumberExists)
-        throw new Exception("Mobile number already exists", 400);
-
-      const isEmailExists = await StudentRepository.findByEmail({
-        runner,
+      await checkUserUniquenessForUpdate(runner, {
+        id: id,
         email: data.email,
-      });
-      if (isEmailExists) throw new Exception("Email already exists", 400);
+        mobileNumber: data.mobileNumber,
+        userName: data.userName,
+      } as CheckUserUniquenessOptionsForUpdate);
 
-      const response = await StudentRepository.updateUser({ runner, id, data });
+      // const isMobileNumberExists = await StudentRepository.findByMobileNumber({
+      //   runner,
+      //   mobileNumber: data.mobileNumber,
+      // });
+      // if (isMobileNumberExists)
+      //   throw new Exception("Mobile number already exists", 400);
+
+      // const isEmailExists = await StudentRepository.findByEmail({
+      //   runner,
+      //   email: data.email,
+      // });
+      // if (isEmailExists) throw new Exception("Email already exists", 400);
+
+     
+      if (imagePath && isIdExists.profileImageUrl) {
+        const imageUrlParts = isIdExists.profileImageUrl.split("/");
+        const filename = imageUrlParts[imageUrlParts.length - 1];
+        unsyncFromPublic(filename);
+      }
+
+      const updatedData = {
+        ...data,
+        updateAt: new Date(),
+      };
+      const response = await StudentRepository.updateUser({
+        runner,
+        id,
+        data: updatedData,
+      });
       if (!response) throw new Exception("Unable to update user data", 400);
 
       return response;
