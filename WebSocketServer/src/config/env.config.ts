@@ -3,7 +3,7 @@ dotenv.config();
 
 export const env = {
   //server
-  SERVER_PORT: +process.env.SERVER_PORT! || +"8000",
+  SERVER_PORT: +process.env.SERVER_PORT! || +"8080",
 
   //database
   DB_HOST: process.env.DB_HOST,

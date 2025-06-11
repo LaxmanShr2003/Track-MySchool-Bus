@@ -19,14 +19,13 @@ export const createStudentSchema = z.object({
 
   address: z.string({ required_error: "Address is required" }),
   guardianName: z.string({ required_error: "Guardian name is required" }),
- 
+
   email: z
     .string({ required_error: "Email is required" })
     .refine((email) => emailRegex.test(email), {
       message: "Invalid email format",
     }),
 
-  
   role: z.enum(["ADMIN", "STUDENT", "DRIVER"]).optional(),
 });
 
@@ -40,17 +39,25 @@ export const studentEmailSchema = z
     email: z.string({ required_error: "User email is required" }),
   })
   .strict();
-  export const studentMobileNumberSchema = z
+export const studentMobileNumberSchema = z
   .object({
     mobileNumber: z.string({ required_error: "Mobile number is required" }),
   })
   .strict();
 
+export const loginSchema = z.object({
+  userName: z.string({ required_error: "User name is required" }),
+  password: z
+    .string({ required_error: "Password is required" })
+    .refine((password) => passwordRegex.test(password), {
+      message: "Invalid password format",
+    }),
+});
 
-
-
+export type LoginSchemaType = z.infer<typeof loginSchema>;
 export type CreateStudentSchemaType = z.infer<typeof createStudentSchema>;
 export type StudentIdSchemaType = z.infer<typeof studentIdSchema>;
 export type StudentEmailSchemaType = z.infer<typeof studentEmailSchema>;
-export type StudentMobileNumberSchemaType = z.infer<typeof studentMobileNumberSchema>;
-
+export type StudentMobileNumberSchemaType = z.infer<
+  typeof studentMobileNumberSchema
+>;

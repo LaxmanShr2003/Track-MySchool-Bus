@@ -60,20 +60,20 @@ export const errorHandler = () => {
     }
 
     // Zod validation error
-    if (err instanceof ZodError) {
-       res.status(400).json({ status: "fail", message: "Validation error", details: err.issues });
-    }
+      if (err instanceof ZodError) {
+        res.status(400).json({ status: "fail", message: "Validation error", details: err.issues });
+      }
 
-    // Database level error handling example
-    if (err.level === "DB") {
-       res.status(500).json({ status: "error", message: "Internal Server Error" });
-    }
+      // Database level error handling example
+      if (err.level === "DB") {
+        res.status(500).json({ status: "error", message: "Internal Server Error" });
+      }
 
-    // For all other errors
-     res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message || "Something went wrong",
-     stack: err.stack,
-    });
+      // For all other errors
+      res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message || "Something went wrong",
+      stack: err.stack,
+      });
   };
 };

@@ -3,12 +3,15 @@ import { MulterHelper } from "../../middlewares/multer";
 import { env } from "../../config/env.config";
 import {
   createStudentSchema,
+  loginSchema,
   studentEmailSchema,
   studentIdSchema,
   studentMobileNumberSchema,
 } from "./student.schema";
 import ZOD from "../../middlewares/schemaValidator";
 import { StudentController } from "./student.controller";
+import { validateToken } from "../../auth/validateToken";
+import { authenticateUser } from "../../auth/authenticateUser";
 
 export const studentRoutes = (router: Router) => {
   router.post(
@@ -76,4 +79,13 @@ export const studentRoutes = (router: Router) => {
     ),
     StudentController.updateStudent
   );
+
+  router.post(
+    '/login',
+    ZOD.requestParser({
+      schema:loginSchema,
+      type:"Body"
+    }),
+    authenticateUser.login
+  )
 };

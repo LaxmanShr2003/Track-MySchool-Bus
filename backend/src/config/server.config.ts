@@ -23,7 +23,6 @@ export const initializeExpressServer = (app: Express) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   router(app);
-
   app.use(errorHandler());
   const PORT = env.SERVER_PORT;
   app.listen(PORT, () => {

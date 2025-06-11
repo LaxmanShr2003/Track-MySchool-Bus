@@ -15,7 +15,7 @@ export const AppDataSource: DataSource = new DataSource({
   username: env.DB_USERNAME,
   password: env.DB_PASSWORD,
   database: env.DB_NAME,
-  synchronize: false,
+  synchronize: true,
   logging: false,
   //dropSchema: true,
   entities: [Student,BusRoute,Bus,Driver,RouteAssignment]
@@ -23,7 +23,7 @@ export const AppDataSource: DataSource = new DataSource({
 
 export const initializeDataSource = async () => {
   try {
-    (await AppDataSource.initialize());
+    ((await AppDataSource.initialize()).runMigrations());
    //await AppDataSource.synchronize(true)
     console.log(`Datasource initialized successfully`);
   } catch (error) {
