@@ -4,9 +4,8 @@ import { Socket } from "socket.io";
 import { WebSocketError } from "./webSocketError";
 
 export const safeSocketHandler = (
-  handler: (socket: Socket, data: any) => Promise<void>
-) => {
-  return async (socket: Socket, data: any) => {
+  (handler: (socket: Socket, data: any) => Promise<void>) =>
+  (data: any) => async (socket: Socket) => {
     try {
       await handler(socket, data);
     } catch (err: any) {
@@ -35,5 +34,4 @@ export const safeSocketHandler = (
       console.error("Socket error:", message);
       socket.emit("error", { message, status });
     }
-  };
-};
+  });

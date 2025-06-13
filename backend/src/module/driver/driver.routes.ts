@@ -2,14 +2,20 @@ import { Router } from "express";
 import { MulterHelper } from "../../middlewares/multer";
 import { env } from "../../config/env.config";
 import ZOD from "../../middlewares/schemaValidator";
-import { createDriverSchema, driverEmailSchema, driverIdSchema, driverUserNameSchema } from "./driver.schema";
+import {
+  createDriverSchema,
+  driverEmailSchema,
+  driverIdSchema,
+  driverUserNameSchema,
+} from "./driver.schema";
 import { driverController } from "./driver.controller";
+import path from "path";
 
 export const driverRoute = (route: Router) => {
   route.post(
     "/driver",
 
-    MulterHelper.getStorage(env.ACCESS_PATH!, {
+    MulterHelper.getStorage(path.resolve("public"), {
       moduleName: "driverProfileImg",
       isFile: false,
     }).single("driverProfileImg"),
@@ -31,7 +37,7 @@ export const driverRoute = (route: Router) => {
     }),
     driverController.findById
   );
-   route.get(
+  route.get(
     "/driver/email/:email",
     ZOD.requestParser({
       schema: driverEmailSchema,
@@ -39,7 +45,7 @@ export const driverRoute = (route: Router) => {
     }),
     driverController.findDriverByEmail
   );
-   route.get(
+  route.get(
     "/driver/userName/:userName",
     ZOD.requestParser({
       schema: driverUserNameSchema,
@@ -47,7 +53,7 @@ export const driverRoute = (route: Router) => {
     }),
     driverController.findDriverByUserName
   );
-   route.get(
+  route.get(
     "/driver/number/:number",
     ZOD.requestParser({
       schema: driverEmailSchema,
@@ -55,35 +61,32 @@ export const driverRoute = (route: Router) => {
     }),
     driverController.findDriverByMobileNumber
   );
-   route.delete(
+  route.delete(
     "/driver/delete/:id",
     ZOD.requestParser({
-      schema:driverIdSchema,
+      schema: driverIdSchema,
       type: "Params",
     }),
     driverController.deleteDriver
   );
 
-   route.patch(
-      "/driver/update/:id",
-      MulterHelper.getStorage(env.ACCESS_PATH!, {
-        moduleName: "driverProfileImg",
-        isFile: false,
-      }).single("driverProfileImg"),
-  
-      ZOD.requestParser(
-        {
-          schema: driverIdSchema,
-          type: "Params",
-        },
-        {
-          schema: createDriverSchema,
-          type: "Body",
-        }
-      ),
-      driverController.updateDriver
-    );
-  
-  
-  
+  route.patch(
+    "/driver/update/:id",
+    MulterHelper.getStorage(path.resolve("public"), {
+      moduleName: "driverProfileImg",
+      isFile: false,
+    }).single("driverProfileImg"),
+
+    ZOD.requestParser(
+      {
+        schema: driverIdSchema,
+        type: "Params",
+      },
+      {
+        schema: createDriverSchema,
+        type: "Body",
+      }
+    ),
+    driverController.updateDriver
+  );
 };

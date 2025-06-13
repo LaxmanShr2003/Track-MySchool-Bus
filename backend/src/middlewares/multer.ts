@@ -29,6 +29,7 @@ export class MulterHelper {
     } = { limits: { fileSize: 5 * 1024 * 1024 }, moduleName: "default" }
   ) {
     return multer({
+      
       storage: this.diskStorage(path, options.moduleName),
       limits: options.limits,
       fileFilter: this.fileFilter({ isFile: options.isFile! }),

@@ -12,12 +12,15 @@ export const initializeWebSocketServer = (server: HTTPServer) => {
         },
     });
 
-    io.use(socketAuthMiddleware);
+   // io.use(socketAuthMiddleware);
 
     io.on('connection', (socket) => {
         console.log(`Client connected: ${socket.id}`);
 
-        socket.on("message", safeSocketHandler(socketMessageMiddleware));
+        socket.on("message", (data) =>
+  safeSocketHandler(socketMessageMiddleware)(data)(socket)
+);
+
 
         socket.on('disconnect', () => {
             console.log(`Client disconnected: ${socket.id}`);

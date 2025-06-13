@@ -15,7 +15,7 @@ const unsync = (_file: string) => {
 };
 
 export const unsyncFromPublic = (_file: string) => {
-  return unsync(path.join(__dirname, "../../public/" + _file));
+  // Always resolve relative to project root
+  return unsync(path.resolve("public", _file));
 };
-
 export default unsync;

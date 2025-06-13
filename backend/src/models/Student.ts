@@ -3,7 +3,7 @@ import { BaseUserEntity } from "../global/BaseEntity";
 import { BusRoute } from "./BusRoute";
 import { RouteAssignment } from "./RouteAssignment";
 
-@Entity()
+@Entity("students")
 export class Student extends BaseUserEntity {
   @Column({
     type: "varchar",

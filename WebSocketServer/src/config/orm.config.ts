@@ -19,7 +19,7 @@ export const initializeDataSource = async () => {
   try {
     (await AppDataSource.initialize());
    //await AppDataSource.synchronize(true)
-    console.log(`Datasource initialized successfully`);
+    console.log(`Datasource initialized successfully hello`);
   } catch (error) {
     console.log("Unable to connect datasource", error);
     throw error;

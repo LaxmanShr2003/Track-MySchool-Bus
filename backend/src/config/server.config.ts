@@ -14,8 +14,8 @@ dotenv.config();
 export const initializeExpressServer = (app: Express) => {
 
 
-  app.use("/public", express.static(path.join(env.ACCESS_PATH!)));
-
+  app.use("/public", express.static(path.resolve('public')));
+  
   app.use(morgan("dev"));
   app.use(helmet({ crossOriginResourcePolicy: false }));
   app.disable("x-powered-by");
@@ -25,7 +25,7 @@ export const initializeExpressServer = (app: Express) => {
   router(app);
   app.use(errorHandler());
   const PORT = env.SERVER_PORT;
-  app.listen(PORT, () => {
+  app.listen(PORT,"0.0.0.0", () => {
     console.log(`Server is running at port ${PORT}`);
   });
 };

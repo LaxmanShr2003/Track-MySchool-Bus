@@ -58,7 +58,7 @@ export const authenticateUser = {
         role: foundUser.role
       };
 
-      const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET!, { expiresIn: "15m" });
+      const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET!, { expiresIn: "7d" });
       const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET!, { expiresIn: "7d" });
 
        res.status(200).json({

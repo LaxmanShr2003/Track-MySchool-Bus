@@ -12,13 +12,17 @@ import ZOD from "../../middlewares/schemaValidator";
 import { StudentController } from "./student.controller";
 import { validateToken } from "../../auth/validateToken";
 import { authenticateUser } from "../../auth/authenticateUser";
+import path from "path";
 
 export const studentRoutes = (router: Router) => {
+
+  const uploadPath = path.resolve("public");
+console.log("Resolved upload path:", uploadPath);
   router.post(
     "/student",
     // validateToken({ checkAdmin: true }),
 
-    MulterHelper.getStorage(env.ACCESS_PATH!, {
+    MulterHelper.getStorage(path.resolve("public"), {
       moduleName: "studentProfileImg",
       isFile: false,
     }).single("studentProfileImg"),
@@ -62,7 +66,7 @@ export const studentRoutes = (router: Router) => {
 
   router.patch(
     "/student/update/:id",
-    MulterHelper.getStorage(env.ACCESS_PATH!, {
+    MulterHelper.getStorage(path.resolve("public"), {
       moduleName: "studentProfileImg",
       isFile: false,
     }).single("studentProfileImg"),
@@ -81,11 +85,11 @@ export const studentRoutes = (router: Router) => {
   );
 
   router.post(
-    '/login',
+    "/login",
     ZOD.requestParser({
-      schema:loginSchema,
-      type:"Body"
+      schema: loginSchema,
+      type: "Body",
     }),
     authenticateUser.login
-  )
+  );
 };
