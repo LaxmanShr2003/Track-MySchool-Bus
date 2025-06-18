@@ -1,4 +1,5 @@
 import { Runner } from "../../global/global";
+import { Exception } from "../../libs/exceptionHandler";
 import { uniqueKey } from "../../libs/hash";
 import { Bus } from "../../models/Bus";
 import { BusRoute } from "../../models/BusRoute";
@@ -17,9 +18,9 @@ export const busRepository = {
     const repo = runner.manager.getRepository(Bus);
 
     try {
-     
       const response = await repo.save({
         id: uniqueKey(),
+        isAssigned: false,
         ...data,
       });
       return response;
@@ -47,10 +48,10 @@ export const busRepository = {
     }
   },
 
-    findAllBus: async ({ runner }: Runner) => {
+  findAllBus: async ({ runner }: Runner) => {
     const repo = runner.manager.getRepository(Bus);
     try {
-      const response = await repo.find()
+      const response = await repo.find();
       return response;
     } catch (error: any) {
       error.level = "DB";
@@ -122,6 +123,28 @@ export const busRepository = {
     } catch (error: any) {
       error.level == "DB";
       throw error;
+    }
+  },
+
+  setAssignedTrue: async ({ runner, busId }: Runner & { busId: string }) => {
+    const repo = runner.manager.getRepository(Bus);
+    try {
+      const response = await repo.update({ id: busId }, { isAssigned: true });
+      return response;
+    } catch (err: any) {
+      err.level = "DB";
+      throw err;
+    }
+  },
+
+  setAssignedFalse: async ({ runner, busId }: Runner & { busId: string }) => {
+    const repo = runner.manager.getRepository(Bus);
+    try {
+      const response = await repo.update({ id: busId }, { isAssigned: false });
+      return response;
+    } catch (err: any) {
+      err.level = "DB";
+      throw err;
     }
   },
 };

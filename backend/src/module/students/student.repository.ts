@@ -4,6 +4,7 @@ import { generateCodePassword, uniqueKey } from "../../libs/hash";
 import { generateUniqueUsername } from "../../libs/usernameGenerator";
 import { Student } from "../../models/Student";
 import { CreateStudentSchemaType } from "./student.schema";
+import { In } from "typeorm";
 
 export const StudentRepository = {
   insert: async ({
@@ -23,7 +24,7 @@ export const StudentRepository = {
         userName: uniqueName,
         profileImageUrl: imgUrl,
         password: generateCodePassword("STUDENT", data.mobileNumber),
-        isActive: true,
+        isAssigned: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         ...data,
@@ -147,5 +148,20 @@ export const StudentRepository = {
       error.level == "DB";
       throw error;
     }
+  },
+  setAssignedTrue: async ({
+    runner,
+    studentIds,
+  }: Runner & { studentIds: string[] }) => {
+    const repo = runner.manager.getRepository(Student);
+    await repo.update({ id: In(studentIds) }, { isAssigned: true });
+  },
+
+  setAssignedFalse: async ({
+    runner,
+    studentIds,
+  }: Runner & { studentIds: string[] }) => {
+    const repo = runner.manager.getRepository(Student);
+    await repo.update({ id: In(studentIds) }, { isAssigned: false });
   },
 };

@@ -4,7 +4,7 @@ import { JWT, TokenPayload } from "../libs/token";
 import { Exception } from "../libs/exceptionHandler";
 
 const accessType = {
-  ACCESS: env.SECRET_KEY,
+  ACCESS: env.JWT_ACCESS_SECRET_KEY,
 };
 
 interface ValidationOptions {

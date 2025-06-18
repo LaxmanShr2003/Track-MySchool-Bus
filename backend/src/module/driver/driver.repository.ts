@@ -21,7 +21,7 @@ export const driverRepository = {
         ),
         password: generateCodePassword("DRIVER", data.mobileNumber),
         profileImageUrl: imgUrl,
-        isActive: true,
+        isAssigned: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         ...data,
@@ -149,4 +149,25 @@ export const driverRepository = {
       throw error;
     }
   },
+
+    setAssignedTrue: async ({ runner, driverId }: Runner & { driverId: string }) => {
+      const repo = runner.manager.getRepository(Driver);
+      try {
+        const response = await repo.update({ id: driverId }, { isAssigned: true });
+        return response;
+      } catch (err: any) {
+        err.level = "DB";
+        throw err;
+      }
+    },
+     setAssignedFalse: async ({ runner, driverId }: Runner & { driverId: string }) => {
+      const repo = runner.manager.getRepository(Driver);
+      try {
+        const response = await repo.update({ id: driverId }, { isAssigned: false });
+        return response;
+      } catch (err: any) {
+        err.level = "DB";
+        throw err;
+      }
+    },
 };

@@ -27,6 +27,7 @@ services:
       - DB_USER=laxman
       - DB_PASSWORD=root
       - DB_NAME=TrackBus
+      - JWT_ACCESS_SECRET_KEY= sdvksdn@sldklskdidsufh
     depends_on:
       - mysql-db
     networks:
@@ -45,7 +46,7 @@ services:
     depends_on:
       - mysql-db
     environment:
-    - SECRET_KEY=lsdlskdnldsknvlkn
+      - JWT_ACCESS_SECRET_KEY= sdvksdn@sldklskdidsufh
     networks:
       - tmsb-net
     restart: unless-stopped
@@ -69,6 +70,22 @@ services:
       - KAFKA_KRAFT_CLUSTER_ID=u1WkiYMPRLaNwpvMb8Xx4A
     volumes:
       - kafka-data:/bitnami/kafka
+    networks:
+      - tmsb-net
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql-db
+      PMA_PORT: 3306
+      PMA_USER: laxman
+      PMA_PASSWORD: root
+    depends_on:
+      - mysql-db
     networks:
       - tmsb-net
     restart: unless-stopped

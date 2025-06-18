@@ -24,6 +24,12 @@ export class Bus {
     nullable: false,
   })
   plateNumber: string;
+  
+  @Column({
+    type:"boolean",
+    nullable:false
+  })
+  isAssigned:boolean
 
   @OneToMany(() => RouteAssignment, (assignment) => assignment.bus)
   routeAssignment: RouteAssignment[];

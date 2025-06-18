@@ -16,6 +16,6 @@ export const env = {
   SECRET_KEY: process.env.SECRET_KEY,
 
   //access paths
-
+  JWT_ACCESS_SECRET_KEY: process.env.JWT_ACCESS_SECRET_KEY,
   ACCESS_PATH: process.env.ACCESS_PATH,
 };

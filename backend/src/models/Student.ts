@@ -12,10 +12,10 @@ export class Student extends BaseUserEntity {
   guardianName: string;
 
   @Column({
-    type: "boolean",
-    nullable: false,
+    type:"boolean",
+    nullable:false
   })
-  isActive: string;
+  isAssigned:boolean
 
   @OneToMany(
     () => RouteAssignment,

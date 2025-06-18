@@ -4,64 +4,102 @@ import bcrypt from "bcrypt";
 import { AppDataSource } from "../config/orm.config";
 import { Driver } from "../models/Driver";
 import { Student } from "../models/Student";
+import { RouteAssignment } from "../models/RouteAssignment";
 import { env } from "../config/env.config";
- // if applicable
+import { Exception } from "../libs/exceptionHandler";
 
-const JWT_ACCESS_SECRET = env.JWT_ACCESS_SECRET_KEY;
-const JWT_REFRESH_SECRET = env.JWT_REFRESH_SECRET_KEY;
+const {
+  JWT_ACCESS_SECRET_KEY: JWT_ACCESS_SECRET,
+  JWT_REFRESH_SECRET_KEY: JWT_REFRESH_SECRET,
+} = env;
 
 export const authenticateUser = {
   login: async (req: Request, res: Response, next: NextFunction) => {
+    const runner = AppDataSource.createQueryRunner();
+
     try {
       const { userName, password } = req.body;
-
       if (!userName || !password) {
-         res.status(400).json({ message: "Username and password are required" });
+        throw new Exception("Username and password are required", 400);
       }
 
-      const runner = AppDataSource.createQueryRunner();
       await runner.connect();
 
+      /* 1. ──────────────────────────────
+       * Find user in Driver or Student
+       * ────────────────────────────── */
       const entitiesToCheck = [
         { repo: runner.manager.getRepository(Driver), role: "DRIVER" },
         { repo: runner.manager.getRepository(Student), role: "STUDENT" },
-        // { repo: runner.manager.getRepository(Admin), role: "ADMIN" }
       ];
 
-      let foundUser: any = null;
-      let role = "";
+      let foundUser: Driver | Student | null = null;
+      let role: "DRIVER" | "STUDENT" = "STUDENT";
 
       for (const { repo, role: currentRole } of entitiesToCheck) {
         const user = await repo.findOne({ where: { userName } });
         if (user) {
-          foundUser = user;
-          role = currentRole;
+          foundUser = user as any;
+          role = currentRole as any;
           break;
         }
       }
 
-      await runner.release();
-
       if (!foundUser) {
-         res.status(401).json({ message: "Invalid credentials" });
+        throw new Exception("Invalid credentials", 401);
       }
 
-    //   const isMatch = await bcrypt.compare(password, foundUser.password);
-    //   if (!isMatch) {
-    //      res.status(401).json({ message: "Invalid credentials" });
-    //   }
+      /* 2. ──────────────────────────────
+       * Validate password (hashed)
+       * ────────────────────────────── */
+      const pwOk = await bcrypt.compare(password, foundUser.password);
+      if (!pwOk) {
+        throw new Exception("Invalid credentials", 401);
+      }
 
-      // Generate tokens
+      /* 3. ──────────────────────────────
+       * Check ACTIVE route assignment
+       * ────────────────────────────── */
+      const raRepo = runner.manager.getRepository(RouteAssignment);
+
+      const activeAssignment = await raRepo.findOne({
+        where:
+          role === "DRIVER"
+            ? { driverId: foundUser.id, status: "ACTIVE" }
+            : { studentId: foundUser.id, status: "ACTIVE" },
+        relations: ["busRoute"],
+      });
+
+      if (!activeAssignment) {
+        throw new Exception(
+          "No active route assignment found for this user",
+          403
+        );
+      }
+
+      const routeId = activeAssignment.busRoute?.id;
+
+      /* 4. ──────────────────────────────
+       * Generate tokens
+       * ────────────────────────────── */
       const payload = {
         id: foundUser.id,
         userName: foundUser.userName,
-        role: foundUser.role
+        role,
+        routeId,
       };
 
-      const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET!, { expiresIn: "7d" });
-      const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET!, { expiresIn: "7d" });
+      const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET!, {
+        expiresIn: "7d",
+      });
+      const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET!, {
+        expiresIn: "7d",
+      });
 
-       res.status(200).json({
+      /* 5. ──────────────────────────────
+       * Success response
+       * ────────────────────────────── */
+      res.status(200).json({
         message: "Login successful",
         accessToken,
         refreshToken,
@@ -69,12 +107,14 @@ export const authenticateUser = {
           id: foundUser.id,
           userName: foundUser.userName,
           email: foundUser.email,
-          role
-        }
+          role,
+          routeId,
+        },
       });
-
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      next(err); // central error middleware decides status & body
+    } finally {
+      await runner.release();
     }
-  }
+  },
 };

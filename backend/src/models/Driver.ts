@@ -11,6 +11,12 @@ export class Driver extends BaseUserEntity {
   })
   licenseNumber: string;
 
+  @Column({
+    type:"boolean",
+    nullable:false
+  })
+  isAssigned:boolean
+
   @OneToMany(() => RouteAssignment, (assignment) => assignment.driver)
   routeAssignment: RouteAssignment[];
 }

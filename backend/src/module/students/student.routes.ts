@@ -15,9 +15,6 @@ import { authenticateUser } from "../../auth/authenticateUser";
 import path from "path";
 
 export const studentRoutes = (router: Router) => {
-
-  const uploadPath = path.resolve("public");
-console.log("Resolved upload path:", uploadPath);
   router.post(
     "/student",
     // validateToken({ checkAdmin: true }),

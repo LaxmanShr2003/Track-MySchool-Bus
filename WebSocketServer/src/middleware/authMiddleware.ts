@@ -2,8 +2,9 @@
 import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
 import jwt from "jsonwebtoken";
+import { env } from "../config/env.config";
 
-const JWT_SECRET = "lsdlskdnldsknvlkn";
+const JWT_SECRET = process.env.JWT_ACCESS_SECRET_KEY || env.JWT_ACCESS_SECRET_KEY;
 
 export const socketAuthMiddleware = (
   socket: Socket,

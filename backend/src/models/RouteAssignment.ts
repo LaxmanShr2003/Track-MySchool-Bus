@@ -23,7 +23,7 @@ export class RouteAssignment {
 
 
   @PrimaryColumn({ type: "date" })
-  assignedDate: string;
+  assignedDate: Date;
 
   @Column({ type: "date", nullable: true })
   endDate?: string;
