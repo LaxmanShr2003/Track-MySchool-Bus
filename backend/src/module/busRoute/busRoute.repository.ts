@@ -37,9 +37,9 @@ export const BusRouteRepository = {
           busId: data.busId,
           driverId: data.driverId,
           studentId,
-          assignedDate: data.assignedDate,
+          assignedDate: new Date(),
           endDate: data.endDate ?? null,
-          status: data.assignmentStatus ?? "ACTIVE",
+          assignmentStatus: data.assignmentStatus ?? "ACTIVE",
           busRoute: busRoute,
         })
       );

@@ -65,8 +65,8 @@ export const authenticateUser = {
       const activeAssignment = await raRepo.findOne({
         where:
           role === "DRIVER"
-            ? { driverId: foundUser.id, status: "ACTIVE" }
-            : { studentId: foundUser.id, status: "ACTIVE" },
+            ? { driverId: foundUser.id, assignmentStatus: "ACTIVE" }
+            : { studentId: foundUser.id, assignmentStatus: "ACTIVE" },
         relations: ["busRoute"],
       });
 

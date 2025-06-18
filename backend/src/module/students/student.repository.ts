@@ -164,4 +164,6 @@ export const StudentRepository = {
     const repo = runner.manager.getRepository(Student);
     await repo.update({ id: In(studentIds) }, { isAssigned: false });
   },
+
+
 };

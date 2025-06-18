@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { RouteAssignment } from "./RouteAssignment";
+import { Bus } from "./Bus";
 
 @Entity()
 export class BusRoute {
@@ -55,4 +57,6 @@ export class BusRoute {
   /** ───── Relationship ───── */
   @OneToMany(() => RouteAssignment, (assignment) => assignment.busRoute)
   routeAssignment: RouteAssignment[];
+
+  
 }

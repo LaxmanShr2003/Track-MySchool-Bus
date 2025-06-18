@@ -11,13 +11,11 @@ export default class ORMHelper {
       throw error;
     }
   };
-  static createTransaction = async () => {
+  static createTransaction = async (runner: QueryRunner) => {
     try {
-      const queryRunner = AppDataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+      await runner.startTransaction();
 
-      return queryRunner;
+      return runner;
     } catch (error) {
       throw error;
     }

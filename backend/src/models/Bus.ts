@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 
 import { RouteAssignment } from "./RouteAssignment";
+import { BusRoute } from "./BusRoute";
 
 @Entity()
 export class Bus {
@@ -24,13 +25,15 @@ export class Bus {
     nullable: false,
   })
   plateNumber: string;
-  
+
   @Column({
-    type:"boolean",
-    nullable:false
+    type: "boolean",
+    nullable: false,
   })
-  isAssigned:boolean
+  isAssigned: boolean;
 
   @OneToMany(() => RouteAssignment, (assignment) => assignment.bus)
   routeAssignment: RouteAssignment[];
+
+ 
 }

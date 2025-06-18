@@ -2,7 +2,6 @@ import { Runner } from "../../global/global";
 import { Exception } from "../../libs/exceptionHandler";
 import { uniqueKey } from "../../libs/hash";
 import { Bus } from "../../models/Bus";
-import { BusRoute } from "../../models/BusRoute";
 import {
   BusIdSchemaType,
   BusNameSchemaType,
@@ -36,10 +35,7 @@ export const busRepository = {
       const response = await repo.findOne({
         where: {
           id: id.id,
-        },
-        relations: {
-          busRoute: true,
-        },
+        }
       });
       return response;
     } catch (error: any) {
@@ -65,10 +61,7 @@ export const busRepository = {
       const response = await repo.findOne({
         where: {
           busName: busName,
-        },
-        relations: {
-          busRoute: true,
-        },
+        }
       });
       return response;
     } catch (error: any) {
@@ -86,10 +79,7 @@ export const busRepository = {
       const response = await repo.findOne({
         where: {
           plateNumber: plateNumber,
-        },
-        relations: {
-          busRoute: true,
-        },
+        }
       });
       return response;
     } catch (error: any) {

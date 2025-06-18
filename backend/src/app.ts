@@ -7,5 +7,5 @@ import path from "path";
   initializeDataSource();
   const app: Express = express();
   initializeExpressServer(app);
- 
+ console.log("hello")
 })();

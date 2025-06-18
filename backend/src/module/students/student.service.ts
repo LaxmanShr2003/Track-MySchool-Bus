@@ -145,6 +145,7 @@ export const studentService = {
 
       const updatedData = {
         ...data,
+        
         updateAt: new Date(),
       };
       const response = await StudentRepository.updateUser({

@@ -33,47 +33,63 @@ export const errorHandler = () => {
       }
     }
 
-    // Default values
-    err.statusCode = err.statusCode || 500;
-    err.status = err.status || "error";
+    // Prevent sending response if already sent
+    if (res.headersSent) {
+      next(err);
+    } else {
+      // Set defaults
+      err.statusCode = err.statusCode || 500;
+      err.status = err.status || "error";
 
-    // Multer error handling
-    if (err instanceof MulterError) {
-      let message;
-      switch (err.code) {
-        case "LIMIT_FILE_SIZE":
-          message = "File size exceeds the allowed limit.";
-          break;
-        case "LIMIT_UNEXPECTED_FILE":
-          message = "Too many files uploaded or unexpected file field.";
-          break;
-        case "LIMIT_PART_COUNT":
-          message = "Too many parts in the multipart request.";
-          break;
-        case "LIMIT_FIELD_KEY":
-          message = "Field name too long.";
-          break;
-        default:
-          message = "Multer error occurred.";
+      // Multer error
+      if (err instanceof MulterError) {
+        let message;
+        switch (err.code) {
+          case "LIMIT_FILE_SIZE":
+            message = "File size exceeds the allowed limit.";
+            break;
+          case "LIMIT_UNEXPECTED_FILE":
+            message = "Too many files uploaded or unexpected file field.";
+            break;
+          case "LIMIT_PART_COUNT":
+            message = "Too many parts in the multipart request.";
+            break;
+          case "LIMIT_FIELD_KEY":
+            message = "Field name too long.";
+            break;
+          default:
+            message = "Multer error occurred.";
+        }
+        res.status(400).json({ status: "fail", message });
       }
-       res.status(400).json({ status: "fail", message });
+
+      // Zod validation error
+      else if (err instanceof ZodError) {
+        res
+          .status(400)
+          .json({
+            status: "fail",
+            message: "Validation error",
+            details: err.issues,
+          });
+      }
+
+      // DB error
+      else if (err.level === "DB") {
+        res
+          .status(500)
+          .json({ status: "error", message: "Internal Server Error" ,stack: err.stack})
+          
+      }
+
+      // All other errors
+      else {
+        res.status(err.statusCode).json({
+          status: err.status,
+          message: err.message || "Something went wrong",
+          stack: err.stack,
+        });
+      }
     }
-
-    // Zod validation error
-      if (err instanceof ZodError) {
-        res.status(400).json({ status: "fail", message: "Validation error", details: err.issues });
-      }
-
-      // Database level error handling example
-      if (err.level === "DB") {
-        res.status(500).json({ status: "error", message: "Internal Server Error" });
-      }
-
-      // For all other errors
-      res.status(err.statusCode).json({
-        status: err.status,
-        message: err.message || "Something went wrong",
-      stack: err.stack,
-      });
   };
 };

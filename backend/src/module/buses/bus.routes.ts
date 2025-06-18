@@ -69,4 +69,5 @@ export const BusRouter = (route: Router) => {
 
     busController.updateBus
   );
+  route.get("/buses", busController.findAllBuses);
 };

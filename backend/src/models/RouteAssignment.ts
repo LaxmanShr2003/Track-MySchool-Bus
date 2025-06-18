@@ -29,7 +29,7 @@ export class RouteAssignment {
   endDate?: string;
 
   @Column({ default: "ACTIVE" })
-  status: "ACTIVE" | "COMPLETED" | "CANCELLED";
+  assignmentStatus: "ACTIVE" | "COMPLETED" | "CANCELLED";
 
   @ManyToOne(() => Bus)
   @JoinColumn({ name: "busId" })

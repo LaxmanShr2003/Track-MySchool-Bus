@@ -40,13 +40,13 @@ export const driverRepository = {
         where: {
           id: id,
         },
-        relations:{
-          routeAssignment:{
-            bus:true,
-            busRoute:true,
-            students:true
-          }
-        }
+        relations: {
+          routeAssignment: {
+            bus: true,
+            busRoute: true,
+            students: true,
+          },
+        },
       });
       return response;
     } catch (error: any) {
@@ -150,24 +150,58 @@ export const driverRepository = {
     }
   },
 
-    setAssignedTrue: async ({ runner, driverId }: Runner & { driverId: string }) => {
-      const repo = runner.manager.getRepository(Driver);
-      try {
-        const response = await repo.update({ id: driverId }, { isAssigned: true });
-        return response;
-      } catch (err: any) {
-        err.level = "DB";
-        throw err;
+  setAssignedTrue: async ({
+    runner,
+    driverId,
+  }: Runner & { driverId: string }) => {
+    const repo = runner.manager.getRepository(Driver);
+    try {
+      const response = await repo.update(
+        { id: driverId },
+        { isAssigned: true }
+      );
+      return response;
+    } catch (err: any) {
+      err.level = "DB";
+      throw err;
+    }
+  },
+  setAssignedFalse: async ({
+    runner,
+    driverId,
+  }: Runner & { driverId: string }) => {
+    const repo = runner.manager.getRepository(Driver);
+    try {
+      const response = await repo.update(
+        { id: driverId },
+        { isAssigned: false }
+      );
+      return response;
+    } catch (err: any) {
+      err.level = "DB";
+      throw err;
+    }
+  },
+
+  checkIsAssigned: async ({
+    runner,
+    driverId,
+  }: Runner & { driverId: string }) => {
+    const repo = runner.manager.getRepository(Driver);
+    try {
+      const result = await repo.findOne({
+        where: { id: driverId },
+        select: ["isAssigned"], // only fetch isAssigned
+      });
+
+      if (!result) {
+        throw new Error("Driver not found");
       }
-    },
-     setAssignedFalse: async ({ runner, driverId }: Runner & { driverId: string }) => {
-      const repo = runner.manager.getRepository(Driver);
-      try {
-        const response = await repo.update({ id: driverId }, { isAssigned: false });
-        return response;
-      } catch (err: any) {
-        err.level = "DB";
-        throw err;
-      }
-    },
+
+      return result.isAssigned;
+    } catch (err: any) {
+      err.level = "DB";
+      throw err;
+    }
+  },
 };

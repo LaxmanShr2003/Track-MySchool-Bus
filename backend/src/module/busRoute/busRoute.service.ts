@@ -1,3 +1,4 @@
+import { validateUnassigned } from "../../libs/checkUnassignedUser";
 import { Exception } from "../../libs/exceptionHandler";
 import ORMHelper from "../../libs/ORMHelper";
 import { busRepository } from "../buses/bus.repository";
@@ -17,8 +18,12 @@ export const BusRouteService = {
       if (isBusRouteExists)
         throw new Exception("Bus route name already exists", 400);
 
-      await ORMHelper.createTransaction();
-
+      await ORMHelper.createTransaction(runner);
+      await validateUnassigned(runner, {
+        busId: data.busId,
+        driverId: data.driverId,
+        studentIds: data.studentIds,
+      });
       const busRouteResponse = await BusRouteRepository.insert({
         runner,
         data,
@@ -34,13 +39,13 @@ export const BusRouteService = {
         studentIds: data.studentIds,
       });
 
-      await runner.commitTransaction();
+      await ORMHelper.commitTransaction(runner);
       return busRouteResponse;
     } catch (error) {
-      await runner.rollbackTransaction();
+      await ORMHelper.rollBackTransaction(runner);
       throw error;
     } finally {
-      await runner.release();
+      await ORMHelper.release(runner);
     }
   },
 
