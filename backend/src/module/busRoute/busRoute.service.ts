@@ -1,6 +1,9 @@
 import { validateUnassigned } from "../../libs/checkUnassignedUser";
 import { Exception } from "../../libs/exceptionHandler";
+import { groupAssignments } from "../../libs/groupAssignments";
 import ORMHelper from "../../libs/ORMHelper";
+import { BusRoute } from "../../models/BusRoute";
+import { RouteAssignment } from "../../models/RouteAssignment";
 import { busRepository } from "../buses/bus.repository";
 import { driverRepository } from "../driver/driver.repository";
 import { StudentRepository } from "../students/student.repository";
@@ -51,45 +54,67 @@ export const BusRouteService = {
 
   deleteBusRoute: async (id: number) => {
     const runner = await ORMHelper.createQueryRunner();
+
     try {
-      const isBusRouteExists = await BusRouteRepository.findBusRouteById({
+      // Start transaction
+      await runner.startTransaction();
+
+      const busRouteRepo = runner.manager.getRepository(BusRoute);
+      const assignmentRepo = runner.manager.getRepository(RouteAssignment);
+
+      // Fetch the bus route with its assignments
+      const busRoute = await BusRouteRepository.findBusRouteById({
         runner,
-        id: { id: id },
+        id: { id },
       });
-      if (!isBusRouteExists)
-        throw new Exception("Bus route is not exists", 400);
-      const assignments = isBusRouteExists.routeAssignment;
+
+      if (!busRoute) throw new Exception("Bus route does not exist", 400);
+
+      // Mark route as INACTIVE
+      await busRouteRepo.update({ id }, { status: "INACTIVE" });
+
+      // Cancel all assignments for this route
+      await assignmentRepo.update(
+        { busRoute: { id } },
+        { assignmentStatus: "CANCELLED" }
+      );
+
+      // Unassign related entities if any
+      const assignments = busRoute.routeAssignment as RouteAssignment[];
       if (assignments?.length) {
-        const busId = assignments[0].busId;
-        const driverId = assignments[0].driverId;
+        const { busId, driverId } = assignments[0];
         const studentIds = assignments.map((a) => a.studentId);
 
-        // Mark assigned entities as false (optional based on your logic)
         await busRepository.setAssignedFalse({ runner, busId });
         await driverRepository.setAssignedFalse({ runner, driverId });
         await StudentRepository.setAssignedFalse({ runner, studentIds });
       }
-      const response = await BusRouteRepository.delete({
-        runner,
-        id: { id: id },
-      });
-      if (!response.success)
-        throw new Exception("Unable to delete busRoute", 400);
-      return response;
-    } catch (error) {
-      throw error;
+
+      await runner.commitTransaction();
+
+      return { success: true };
+    } catch (err) {
+      await runner.rollbackTransaction();
+      throw err;
+    } finally {
+      await runner.release();
     }
   },
 
   findBusRouteById: async (id: number) => {
     const runner = await ORMHelper.createQueryRunner();
     try {
-      const response = await BusRouteRepository.findBusRouteById({
+      const response: BusRoute = await BusRouteRepository.findBusRouteById({
         runner,
         id: { id: id },
       });
       if (!response) throw new Exception("Bus route not found", 400);
-      return response;
+      const transformedRoutes = {
+        ...response,
+        routeAssignment: groupAssignments(response.routeAssignment),
+      };
+
+      return transformedRoutes;
     } catch (error) {
       throw error;
     }
@@ -112,9 +137,16 @@ export const BusRouteService = {
   findAllBusRoute: async () => {
     const runner = await ORMHelper.createQueryRunner();
     try {
-      const response = await BusRouteRepository.findAllBusRoute({ runner });
+      const response: BusRoute[] = await BusRouteRepository.findAllBusRoute({
+        runner,
+      });
       if (!response) throw new Exception("Unable to fetch the bus route", 400);
-      return response;
+
+      const transformedRoutes = response.map((route) => ({
+        ...route,
+        routeAssignment: groupAssignments(route.routeAssignment),
+      }));
+      return transformedRoutes;
     } catch (error) {
       throw error;
     }

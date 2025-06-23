@@ -1,6 +1,6 @@
 import { Router } from "express";
 import ZOD from "../../middlewares/schemaValidator";
-import { createBusRouteSchema } from "./busRoute.schema";
+import { busRouteIdSchema, createBusRouteSchema } from "./busRoute.schema";
 import { BusRouteController } from "./busRoute.controller";
 
 export const busRouteRouter = (router: Router) => {
@@ -12,4 +12,7 @@ export const busRouteRouter = (router: Router) => {
     }),
     BusRouteController.addDriver
   );
+  router.get("/bus-routes", BusRouteController.findAllBusRoute);
+  router.get("/bus-route/:id", BusRouteController.findBusRouteById);
+  router.delete("/bus-route/:id", BusRouteController.deleteRoute);
 };

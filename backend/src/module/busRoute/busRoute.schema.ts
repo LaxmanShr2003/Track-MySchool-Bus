@@ -79,7 +79,10 @@ export const updateBusRouteSchema = z
 /** ───── ID Only ───── */
 export const busRouteIdSchema = z
   .object({
-    id: z.number({ required_error: "Route ID is required" }),
+    id: z
+      .string({ required_error: "Route ID is required" })
+      .transform((val) => Number(val))
+      .refine((n) => !isNaN(n), { message: "Route ID must be a number" }),
   })
   .strict();
 

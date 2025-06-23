@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { env } from "./env.config";
+import { GpsData } from "../models/GpsData";
 
 
 export const AppDataSource: DataSource = new DataSource({
@@ -9,10 +10,10 @@ export const AppDataSource: DataSource = new DataSource({
   username: env.DB_USERNAME,
   password: env.DB_PASSWORD,
   database: env.DB_NAME,
-  synchronize: false,
+  synchronize: true,
   logging: false,
   //dropSchema: true,
-  entities: []
+  entities: [GpsData]
 });
 
 export const initializeDataSource = async () => {

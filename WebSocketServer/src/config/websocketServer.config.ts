@@ -4,6 +4,7 @@ import type { Server as HTTPServer } from "http";
 import { socketAuthMiddleware } from "../middleware/authMiddleware";
 import { safeSocketHandler } from "../lib/errorHandler";
 import { socketMessageMiddleware } from "../middleware/socketMessageMiddleware";
+import { initializeKafkaConsumer } from "../Kafka/config/kafka.consumer.config";
 
 export const initializeWebSocketServer = (server: HTTPServer) => {
   const io = new Server(server, {
@@ -11,24 +12,7 @@ export const initializeWebSocketServer = (server: HTTPServer) => {
       origin: "*", // Adjust for production
     },
   });
-
-  //     io.use(socketAuthMiddleware);
-
-  //     io.on('connection', (socket) => {
-  //         console.log(`Client connected: ${socket.id}`);
-
-  //         socket.on("message", (data) =>
-  //         safeSocketHandler(socketMessageMiddleware)(data)(socket)
-  // );
-
-  //         socket.on('disconnect', () => {
-  //             console.log(`Client disconnected: ${socket.id}`);
-  //         });
-  //     });
-
-  /* -------------------------------------------------- */
-  /* Attach JWT auth middleware                         */
-  /* -------------------------------------------------- */
+  initializeKafkaConsumer(io);
   io.use(socketAuthMiddleware);
 
   /* -------------------------------------------------- */

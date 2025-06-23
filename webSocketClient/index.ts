@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 
 const socket = io("ws://0.0.0.0:8080", {
   auth: {
-    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEzMGYxNmZlMTFmYmI3ZGU5ZTk2NzhlM2U2Yjg4OTY3IiwidXNlck5hbWUiOiJKaXdhbjc3ODkiLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzQ5ODIzNDE1LCJleHAiOjE3NTA0MjgyMTV9.z2LJZ-aWw0Ta77R40N0_tNVNsFlNGuNIatAiRvcyBjM" // Replace with a real JWT
+    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEzMGYxNmZlMTFmYmI3ZGU5ZTk2NzhlM2U2Yjg4OTY3IiwidXNlck5hbWUiOiJKaXdhbjc3ODkiLCJyb2xlIjoiRFJJVkVSIiwicm91dGVJZCI6NSwiaWF0IjoxNzUwNjA0NDU0LCJleHAiOjE3NTEyMDkyNTR9.lMqIAerNQgFjE22-mh7aUSjYzYcl6tYMkaguKORzYyI" // Replace with a real JWT
   }
 });
 

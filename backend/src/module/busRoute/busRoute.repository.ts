@@ -58,11 +58,11 @@ export const BusRouteRepository = {
   }: Runner & { id: Pick<BusRoute, "id"> }) => {
     const repo = await runner.manager.getRepository(BusRoute);
     try {
-      const response:BusRoute = await repo.findOne({
+      const response = await repo.findOne({
         where: {
           id: { id: id.id },
         },
-        relations: ["RouteAssignment"],
+        relations: ["routeAssignment"],
       });
       return response;
     } catch (err: any) {
@@ -81,6 +81,7 @@ export const BusRouteRepository = {
         where: {
           routeName: { routeName: routeName.routeName },
         },
+        relations: ["routeAssignment"],
       });
       return response;
     } catch (err: any) {
@@ -89,29 +90,17 @@ export const BusRouteRepository = {
     }
   },
 
-  delete: async ({ runner, id }: Runner & { id: Pick<BusRoute, "id"> }) => {
+  delete: async ({ runner, id }: Runner & { id: number }) => {
     const busRouteRepo = runner.manager.getRepository(BusRoute);
-    const routeAssignmentRepo = runner.manager.getRepository(RouteAssignment);
 
     try {
-      await runner.startTransaction();
-
-      await routeAssignmentRepo.update(
-        { busRoute: { id } },
-        { status: "CANCELLED" }
-      );
       // Delete bus route
       await busRouteRepo.delete(id);
 
-      await runner.commitTransaction();
-
       return { success: true };
     } catch (err: any) {
-      await runner.rollbackTransaction();
       err.level = "DB";
       throw err;
-    } finally {
-      await runner.release();
     }
   },
 
@@ -199,7 +188,9 @@ export const BusRouteRepository = {
   findAllBusRoute: async ({ runner }: Runner) => {
     const repo = await runner.manager.getRepository(BusRoute);
     try {
-      const response = await repo.find();
+      const response = await repo.find({
+        relations: ["routeAssignment"],
+      });
       return response;
     } catch (err: any) {
       err.level = "DB";

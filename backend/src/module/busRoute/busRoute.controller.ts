@@ -35,8 +35,9 @@ export const BusRouteController = {
       res.json(
         messageFormater(
           true,
-          response,
+
           response.length === 0 ? "No bus routes found" : undefined,
+          response,
           200
         )
       );
@@ -46,20 +47,15 @@ export const BusRouteController = {
   },
 
   findBusRouteById: async (
-    req: Request<BusRouteIdSchemaType, {}, {}>,
+    req: Request<{ id: number }, {}, {}>,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      const { id } = req.params;
+      const id = Number(req.params.id);
       const response = await BusRouteService.findBusRouteById(id);
       res.json(
-        messageFormater(
-          true,
-          response.toString(),
-          "Successfully fetched bus route",
-          200
-        )
+        messageFormater(true, "Successfully fetched bus route", response, 200)
       );
     } catch (error) {
       next(error);
@@ -87,9 +83,15 @@ export const BusRouteController = {
     next: NextFunction
   ) => {
     try {
-        const {id} = req.params;
-        const response= await BusRouteService.deleteBusRoute(id);
-        res.json(messageFormater(true,response.success?"Bus route deleted successfully":undefined,200));
+      const id = Number(req.params.id);
+      const response = await BusRouteService.deleteBusRoute(id);
+      res.json(
+        messageFormater(
+          true,
+          response.success ? "Bus route deleted successfully" : undefined,
+          200
+        )
+      );
     } catch (error) {
       next(error);
     }
