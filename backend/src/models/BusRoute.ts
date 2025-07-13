@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { RouteAssignment } from "./RouteAssignment";
 import { Bus } from "./Bus";
+import { Checkpoint } from "./CheckPoint";
 
 @Entity()
 export class BusRoute {
@@ -25,20 +26,11 @@ export class BusRoute {
   startLat: number;
 
   @Column({ type: "double precision", nullable: false })
-  startLng: number;
-
-  @Column({ type: "double precision", nullable: false })
-  endLat: number;
-
-  @Column({ type: "double precision", nullable: false })
   endLng: number;
 
   /** ───── Optional human-readable labels ───── */
   @Column({ type: "varchar", length: 150, nullable: true })
   startingPointName: string;
-
-  @Column({ type: "varchar", length: 150, nullable: true })
-  destinationPointName: string;
 
   /** ───── Status ───── */
   @Column({
@@ -52,11 +44,14 @@ export class BusRoute {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
 
   /** ───── Relationship ───── */
-  @OneToMany(() => RouteAssignment, (assignment) => assignment.busRoute)
+  @OneToMany(() => RouteAssignment, (assignment) => assignment.busRoute, {
+    cascade: true,
+  })
   routeAssignment: RouteAssignment[];
 
-  
+  @OneToMany(() => Checkpoint, cp => cp.busRoute, { cascade: true })
+  checkpoints: Checkpoint[];
 }

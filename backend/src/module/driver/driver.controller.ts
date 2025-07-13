@@ -5,6 +5,7 @@ import {
   DriverIdSchemaType,
   DriverMobileNumberSchemaType,
   DriverUserNameSchemaType,
+
 } from "./driver.schema";
 import { Exception } from "../../libs/exceptionHandler";
 import { driverService } from "./driver.service";
@@ -27,7 +28,7 @@ export const driverController = {
       }
 
       const driverData = req.body;
-      const imageUrl = `${req.protocol}://${req.get("host")}/public/${req.file.filename}`;
+      const imageUrl = `/public/${req.file.filename}`;
 
       const response = await driverService.addDriver(driverData, imageUrl);
       res
@@ -37,6 +38,29 @@ export const driverController = {
         );
     } catch (error) {
       next(error);
+    }
+  },
+  findUnAssignedDriver: async (
+    req: Request<{}, {}, {}>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      
+      const response = await driverService.findUnassignedDriver();
+      res
+        .status(201)
+        .json(
+          messageFormater(
+            true,
+            response.length > 0
+              ? "unasssigned drivers fetched successfully"
+              : "All driver are assigned!",
+            response
+          )
+        );
+    } catch (err) {
+      next(err);
     }
   },
 

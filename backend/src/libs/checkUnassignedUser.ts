@@ -3,6 +3,7 @@ import { Exception } from "../libs/exceptionHandler";
 import { Bus } from "../models/Bus";
 import { Driver } from "../models/Driver";
 import { Student } from "../models/Student";
+import { RouteAssignment } from "../models/RouteAssignment"; // Import RouteAssignment
 
 /**
  * Validate that bus, driver and all students are UN‑assigned.
@@ -19,6 +20,7 @@ export const validateUnassigned = async (
   const busRepo = runner.manager.getRepository(Bus);
   const driverRepo = runner.manager.getRepository(Driver);
   const studentRepo = runner.manager.getRepository(Student);
+  const routeAssignRepo = runner.manager.getRepository(RouteAssignment);
 
   /* 🚍 1. Bus ---------------------------------------------------- */
   const bus = await busRepo.findOne({
@@ -30,6 +32,16 @@ export const validateUnassigned = async (
   if (bus.isAssigned)
     throw new Exception(`Bus ${busId} is already assigned`, 400);
 
+  // New: Check active assignment in RouteAssignment
+  const activeBusAssignment = await routeAssignRepo.findOne({
+    where: { busId, assignmentStatus: "ACTIVE" },
+  });
+  if (activeBusAssignment)
+    throw new Exception(
+      `Bus ${busId} already has an active route assignment`,
+      400
+    );
+
   /* 👨‍✈️ 2. Driver ---------------------------------------------- */
   const driver = await driverRepo.findOne({
     where: { id: driverId },
@@ -39,6 +51,16 @@ export const validateUnassigned = async (
   if (!driver) throw new Exception(`Driver ${driverId} not found`, 400);
   if (driver.isAssigned)
     throw new Exception(`Driver ${driverId} is already assigned`, 400);
+
+  // New: Check active assignment in RouteAssignment
+  const activeDriverAssignment = await routeAssignRepo.findOne({
+    where: { driverId, assignmentStatus: "ACTIVE" },
+  });
+  if (activeDriverAssignment)
+    throw new Exception(
+      `Driver ${driverId} already has an active route assignment`,
+      400
+    );
 
   /* 👩‍🎓 3. Students -------------------------------------------- */
   const students = await studentRepo.find({
@@ -61,6 +83,23 @@ export const validateUnassigned = async (
       `Student(s) already assigned: ${alreadyAssigned
         .map((s) => s.id)
         .join(", ")}`,
+      400
+    );
+  }
+
+  // New: Check active assignments for students in RouteAssignment
+  const activeStudentAssignments = await routeAssignRepo.find({
+    where: {
+      studentId: In(studentIds),
+      assignmentStatus: "ACTIVE",
+    },
+  });
+  if (activeStudentAssignments.length > 0) {
+    const assignedStudentIds = activeStudentAssignments.map((a) => a.studentId);
+    throw new Exception(
+      `Student(s) already assigned in active routes: ${[
+        ...new Set(assignedStudentIds),
+      ].join(", ")}`,
       400
     );
   }

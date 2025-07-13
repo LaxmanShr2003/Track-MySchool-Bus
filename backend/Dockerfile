@@ -2,7 +2,7 @@
 FROM node:20.15.0
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy package files first to install dependencies efficiently
 COPY package*.json ./

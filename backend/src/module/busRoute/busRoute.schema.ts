@@ -23,8 +23,6 @@ export const createBusRouteSchema = z.object({
 
   /** Coordinates */
   startLat: latSchema,
-  startLng: lngSchema,
-  endLat: latSchema,
   endLng: lngSchema,
 
   /** Optional labels */
@@ -32,13 +30,21 @@ export const createBusRouteSchema = z.object({
     .string()
     .max(150, { message: "Label can’t exceed 150 characters" })
     .optional(),
-  destinationPointName: z
-    .string()
-    .max(150, { message: "Label can’t exceed 150 characters" })
-    .optional(),
 
   /** Status (optional; defaults to INACTIVE) */
   status: statusEnum.default("INACTIVE").optional(),
+
+  /** ───── New Fields for checkpoint Assignment ───── */
+  checkpoints: z
+    .array(
+      z.object({
+        lat: latSchema,
+        lng: lngSchema,
+        label: z.string().max(150).optional(),
+        order: z.number().int().min(1),
+      })
+    )
+    .nonempty({ message: "At least one checkpoint is required" }),
 
   /** ───── New Fields for Route Assignment ───── */
 
@@ -57,10 +63,12 @@ export const createBusRouteSchema = z.object({
     }),
 
   endDate: z
-    .string()
-    .refine((date) => !date || !isNaN(Date.parse(date)), {
-      message: "End date must be a valid date string or empty",
-    })
+    .union([
+      z.string().refine((date) => !isNaN(Date.parse(date)), {
+        message: "Must be a valid date string",
+      }),
+      z.null(),
+    ])
     .optional(),
 
   assignmentStatus: routeAssignmentStatusEnum.default("ACTIVE").optional(),
@@ -86,7 +94,7 @@ export const busRouteIdSchema = z
   })
   .strict();
 
-  export const busRouteNameSchema = z
+export const busRouteNameSchema = z
   .object({
     routeName: z.string({ required_error: "Route name is required" }),
   })

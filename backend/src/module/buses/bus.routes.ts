@@ -9,6 +9,7 @@ import {
 import { busController } from "./bus.controller";
 
 export const BusRouter = (route: Router) => {
+  route.get("/bus/assigned", busController.findUnAssignedBuses);
   route.post(
     "/bus",
 

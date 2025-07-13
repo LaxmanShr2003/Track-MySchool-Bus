@@ -19,7 +19,7 @@ export const initializeExpressServer = (app: Express) => {
   app.use(morgan("dev"));
   app.use(helmet({ crossOriginResourcePolicy: false }));
   app.disable("x-powered-by");
-  app.use(cors({ origin: "*" }));
+  app.use(cors({ origin: "http://localhost:5173", }));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   router(app);

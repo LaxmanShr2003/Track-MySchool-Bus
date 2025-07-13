@@ -55,6 +55,18 @@ export const busRepository = {
     }
   },
 
+    findUnassignedBuses: async ({ runner }: Runner) => {
+      const repo = runner.manager.getRepository(Bus);
+      try {
+        const unassignedBuses = await repo.find({
+          where: { isAssigned: false },
+        });
+        return unassignedBuses;
+      } catch (err: any) {
+        throw err;
+      }
+    },
+
   findByBusName: async ({ runner, busName }: Runner & Pick<Bus, "busName">) => {
     const repo = runner.manager.getRepository(Bus);
     try {

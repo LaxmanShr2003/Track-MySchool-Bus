@@ -15,6 +15,7 @@ import { authenticateUser } from "../../auth/authenticateUser";
 import path from "path";
 
 export const studentRoutes = (router: Router) => {
+  router.get("/student/assigned", StudentController.findUnAssignedDriver);
   router.post(
     "/student",
     // validateToken({ checkAdmin: true }),

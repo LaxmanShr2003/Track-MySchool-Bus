@@ -33,7 +33,7 @@ services:
     networks:
       - tmsb-net
     volumes:
-      - "D:/Semester 6/Final Year Project Module/FYP Development/TrackMySchoolBus/backend:/app"
+      - "./backend:/app"
 
     restart: unless-stopped
 
@@ -91,8 +91,8 @@ services:
     restart: unless-stopped
 
 volumes:
-  mysql-data: {}
-  kafka-data: {}
+  mysql-data: 
+  kafka-data: 
 
 networks:
   tmsb-net:

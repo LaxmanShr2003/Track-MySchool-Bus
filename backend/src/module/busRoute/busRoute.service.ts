@@ -57,7 +57,7 @@ export const BusRouteService = {
 
     try {
       // Start transaction
-      await runner.startTransaction();
+      await ORMHelper.createTransaction(runner);
 
       const busRouteRepo = runner.manager.getRepository(BusRoute);
       const assignmentRepo = runner.manager.getRepository(RouteAssignment);
@@ -90,14 +90,14 @@ export const BusRouteService = {
         await StudentRepository.setAssignedFalse({ runner, studentIds });
       }
 
-      await runner.commitTransaction();
+      await ORMHelper.commitTransaction(runner);
 
       return { success: true };
     } catch (err) {
-      await runner.rollbackTransaction();
+      await ORMHelper.rollBackTransaction(runner);
       throw err;
     } finally {
-      await runner.release();
+      await ORMHelper.release(runner);
     }
   },
 
@@ -117,6 +117,8 @@ export const BusRouteService = {
       return transformedRoutes;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
   findBusRouteByName: async (busRouteName: string) => {
@@ -132,6 +134,8 @@ export const BusRouteService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
   findAllBusRoute: async () => {
@@ -149,6 +153,8 @@ export const BusRouteService = {
       return transformedRoutes;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 };

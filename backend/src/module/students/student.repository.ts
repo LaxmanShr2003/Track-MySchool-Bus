@@ -23,6 +23,7 @@ export const StudentRepository = {
         id: uniqueKey(),
         userName: uniqueName,
         profileImageUrl: imgUrl,
+        role: "STUDENT",
         password: generateCodePassword("STUDENT", data.mobileNumber),
         isAssigned: false,
         createdAt: new Date(),
@@ -62,6 +63,17 @@ export const StudentRepository = {
     } catch (error: any) {
       error.level = "DB";
       throw error;
+    }
+  },
+  findUnassignedStudents: async ({ runner }: Runner) => {
+    const repo = runner.manager.getRepository(Student);
+    try {
+      const unassignedStudents = await repo.find({
+        where: { isAssigned: false },
+      });
+      return unassignedStudents;
+    } catch (err: any) {
+      throw err;
     }
   },
 
@@ -164,6 +176,4 @@ export const StudentRepository = {
     const repo = runner.manager.getRepository(Student);
     await repo.update({ id: In(studentIds) }, { isAssigned: false });
   },
-
-
 };

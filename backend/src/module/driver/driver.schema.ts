@@ -25,7 +25,7 @@ export const createDriverSchema = z.object({
       message: "Invalid email format",
     }),
   licenseNumber: z.string({ required_error: "License number is required" }),
-
+  gender: z.enum(["MALE", "FEMALE"]),
   role: z.enum(["ADMIN", "STUDENT", "DRIVER"]).optional(),
 });
 
@@ -45,11 +45,13 @@ export const driverMobileNumberSchema = z
   })
   .strict();
 
-  export const driverUserNameSchema = z
+export const driverUserNameSchema = z
   .object({
     userName: z.string({ required_error: "User name is required" }),
   })
   .strict();
+
+
 
 export type CreateDriverSchemaType = z.infer<typeof createDriverSchema>;
 export type DriverIdSchemaType = z.infer<typeof driverIdSchema>;
@@ -58,3 +60,4 @@ export type DriverMobileNumberSchemaType = z.infer<
   typeof driverMobileNumberSchema
 >;
 export type DriverUserNameSchemaType = z.infer<typeof driverUserNameSchema>;
+

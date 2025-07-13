@@ -5,6 +5,7 @@ import { BusRoute } from "../models/BusRoute";
 import { Bus } from "../models/Bus";
 import { Driver } from "../models/Driver";
 import { RouteAssignment } from "../models/RouteAssignment";
+import { Checkpoint } from "../models/CheckPoint";
 
 export const AppDataSource: DataSource = new DataSource({
   type: "mysql",
@@ -15,14 +16,14 @@ export const AppDataSource: DataSource = new DataSource({
   database: env.DB_NAME,
   synchronize: true,
   logging: false,
-  //dropSchema: true,
-  entities: [Student, BusRoute, Bus, Driver, RouteAssignment],
+  dropSchema: false,
+  entities: [Student, BusRoute, Bus, Driver, RouteAssignment,Checkpoint],
 });
 
 export const initializeDataSource = async () => {
   try {
     (await AppDataSource.initialize()).runMigrations();
-    //await AppDataSource.synchronize(true)
+    
     console.log(`Datasource initialized successfully`);
   } catch (error) {
     console.log("Unable to connect datasource", error);

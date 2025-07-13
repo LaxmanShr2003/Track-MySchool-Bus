@@ -22,6 +22,7 @@ export const driverRepository = {
         password: generateCodePassword("DRIVER", data.mobileNumber),
         profileImageUrl: imgUrl,
         isAssigned: false,
+        role: "DRIVER",
         createdAt: new Date(),
         updatedAt: new Date(),
         ...data,
@@ -44,7 +45,6 @@ export const driverRepository = {
           routeAssignment: {
             bus: true,
             busRoute: true,
-            students: true,
           },
         },
       });
@@ -64,6 +64,18 @@ export const driverRepository = {
       return response;
     } catch (error: any) {
       throw error;
+    }
+  },
+
+  findUnassignedDriver: async ({ runner }: Runner) => {
+    const repo = runner.manager.getRepository(Driver);
+    try {
+      const unassignedDrivers = await repo.find({
+        where: { isAssigned: false },
+      });
+      return unassignedDrivers;
+    } catch (err: any) {
+      throw err;
     }
   },
 

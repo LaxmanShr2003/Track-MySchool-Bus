@@ -56,6 +56,30 @@ export const busController = {
     }
   },
 
+   findUnAssignedBuses: async (
+      req: Request<{}, {}, {}>,
+      res: Response,
+      next: NextFunction
+    ) => {
+      try {
+        
+        const response = await busService.findUnassignedBuses();
+        res
+          .status(201)
+          .json(
+            messageFormater(
+              true,
+              response.length > 0
+                ? "unasssigned buses fetched successfully"
+                : "All buses are assigned!",
+              response
+            )
+          );
+      } catch (err) {
+        next(err);
+      }
+    },
+
   findByBusName: async (
     req: Request<BusNameSchemaType, {}, {}>,
     res: Response,

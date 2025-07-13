@@ -58,8 +58,17 @@ export class BaseUserEntity {
   email: string;
 
   @Column({
+    type: "enum",
+    enum: ["MALE", "FEMALE"],
+    default: "MALE",
+    nullable: false,
+  })
+  gender: string;
+
+  @Column({
     type: "varchar",
     nullable: false,
+    unique: true,
   })
   password: string;
 

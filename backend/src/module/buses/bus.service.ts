@@ -29,6 +29,21 @@ export const busService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
+    }
+  },
+  findUnassignedBuses: async () => {
+    const runner = await ORMHelper.createQueryRunner();
+    try {
+      const response = await busRepository.findUnassignedBuses({
+        runner,
+      });
+      return response;
+    } catch (err) {
+      throw err;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -40,6 +55,8 @@ export const busService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -52,6 +69,8 @@ export const busService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -64,6 +83,8 @@ export const busService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -79,6 +100,8 @@ export const busService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -93,6 +116,8 @@ export const busService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
   updateBus: async (id: BusIdSchemaType, data: createBusSchemaType) => {
@@ -107,6 +132,8 @@ export const busService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 };

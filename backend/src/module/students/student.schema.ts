@@ -25,8 +25,9 @@ export const createStudentSchema = z.object({
     .refine((email) => emailRegex.test(email), {
       message: "Invalid email format",
     }),
-
-  role: z.enum(["ADMIN", "STUDENT", "DRIVER"]).optional(),
+  gender: z.enum(["MALE", "FEMALE"]),
+  age: z.string({ required_error: "Age is required" }),
+  level: z.string({ required_error: "Student level is required" }),
 });
 
 export const studentIdSchema = z
@@ -47,9 +48,7 @@ export const studentMobileNumberSchema = z
 
 export const loginSchema = z.object({
   userName: z.string({ required_error: "User name is required" }),
-  password: z
-    .string({ required_error: "Password is required" })
-   
+  password: z.string({ required_error: "Password is required" }),
 });
 
 export type LoginSchemaType = z.infer<typeof loginSchema>;

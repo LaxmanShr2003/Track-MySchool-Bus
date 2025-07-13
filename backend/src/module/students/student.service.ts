@@ -34,6 +34,21 @@ export const studentService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
+    }
+  },
+  findUnassignedStuents: async () => {
+    const runner = await ORMHelper.createQueryRunner();
+    try {
+      const response = await StudentRepository.findUnassignedStudents({
+        runner,
+      });
+      return response;
+    } catch (err) {
+      throw err;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -46,6 +61,8 @@ export const studentService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -68,6 +85,8 @@ export const studentService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -80,6 +99,8 @@ export const studentService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -92,6 +113,8 @@ export const studentService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -107,6 +130,8 @@ export const studentService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -136,7 +161,6 @@ export const studentService = {
       // });
       // if (isEmailExists) throw new Exception("Email already exists", 400);
 
-     
       if (imagePath && isIdExists.profileImageUrl) {
         const imageUrlParts = isIdExists.profileImageUrl.split("/");
         const filename = imageUrlParts[imageUrlParts.length - 1];
@@ -145,7 +169,7 @@ export const studentService = {
 
       const updatedData = {
         ...data,
-        
+
         updateAt: new Date(),
       };
       const response = await StudentRepository.updateUser({
@@ -158,6 +182,8 @@ export const studentService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 };

@@ -28,6 +28,22 @@ export const driverService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
+    }
+  },
+
+  findUnassignedDriver: async () => {
+    const runner = await ORMHelper.createQueryRunner();
+    try {
+      const response = await driverRepository.findUnassignedDriver({
+        runner,
+      });
+      return response;
+    } catch (err) {
+      throw err;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -39,6 +55,8 @@ export const driverService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -61,6 +79,8 @@ export const driverService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -68,11 +88,14 @@ export const driverService = {
     const runner = await ORMHelper.createQueryRunner();
     try {
       const response = await driverRepository.findById({ runner, id });
-      if (!response) throw new Exception("Unable to find driver data", 400);
+      if (!response)
+        throw new Exception("Unable to find driver dataaaaaa", 400);
 
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -80,11 +103,14 @@ export const driverService = {
     const runner = await ORMHelper.createQueryRunner();
     try {
       const response = await driverRepository.findByEmail({ runner, email });
-      if (!response) throw new Exception("Unable to find driver data", 400);
+      if (!response)
+        throw new Exception("Unable to find driver datasssss", 400);
 
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
   findDriverByUserName: async (userName: string) => {
@@ -94,11 +120,14 @@ export const driverService = {
         runner,
         userName,
       });
-      if (!response) throw new Exception("Unable to find driver data", 400);
+      if (!response)
+        throw new Exception("Unable to find driver datadddddd", 400);
 
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
   findDriverByMobileNumber: async (mobileNumber: string) => {
@@ -108,11 +137,14 @@ export const driverService = {
         runner,
         mobileNumber,
       });
-      if (!response) throw new Exception("Unable to find driver data", 400);
+      if (!response)
+        throw new Exception("Unable to find driver dataffffff", 400);
 
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 
@@ -161,6 +193,8 @@ export const driverService = {
       return response;
     } catch (error) {
       throw error;
+    } finally {
+      await ORMHelper.release(runner);
     }
   },
 };

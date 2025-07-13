@@ -21,12 +21,13 @@ export const StudentController = {
       }
 
       const profileImg = req.file.filename;
+      console.log(profileImg);
       if (!profileImg) {
         throw new Exception("Please insert image", 400);
       }
 
       const studentData = req.body;
-      const imageUrl = `${req.protocol}://${req.get("host")}/public/${req.file.filename}`;
+      const imageUrl = `/public/${req.file.filename}`;
 
       const response = await studentService.addStudent(studentData, imageUrl);
       res
@@ -41,6 +42,29 @@ export const StudentController = {
         );
     } catch (error) {
       next(error);
+    }
+  },
+
+  findUnAssignedDriver: async (
+    req: Request<{}, {}, {}>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const response = await studentService.findUnassignedStuents();
+      res
+        .status(201)
+        .json(
+          messageFormater(
+            true,
+            response.length > 0
+              ? "unasssigned students fetched successfully"
+              : "All students are assigned!",
+            response
+          )
+        );
+    } catch (err) {
+      next(err);
     }
   },
 

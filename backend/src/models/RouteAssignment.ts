@@ -4,6 +4,7 @@ import {
   ManyToOne,
   JoinColumn,
   Column,
+  Unique,
 } from "typeorm";
 import { Driver } from "./Driver";
 import { Bus } from "./Bus";
@@ -11,6 +12,7 @@ import { BusRoute } from "./BusRoute";
 import { Student } from "./Student";
 
 @Entity()
+//@Unique(["studentId", "driverId", "busId", "busRouteId", "assignedDate"])
 export class RouteAssignment {
   @PrimaryColumn()
   busId: string;
@@ -21,6 +23,8 @@ export class RouteAssignment {
   @PrimaryColumn()
   studentId: string;
 
+  @Column()
+  busRouteId: number;
 
   @PrimaryColumn({ type: "date" })
   assignedDate: Date;
@@ -39,11 +43,11 @@ export class RouteAssignment {
   @JoinColumn({ name: "driverId" })
   driver: Driver;
 
-  @ManyToOne(()=>BusRoute)
-  @JoinColumn({name:"busRouteId"})
-  busRoute: BusRoute
+  @ManyToOne(() => BusRoute, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "busRouteId" })
+  busRoute: BusRoute;
 
-    @ManyToOne(()=>Student)
-  @JoinColumn({name:"studentId"})
-  students: Student
+  @ManyToOne(() => Student)
+  @JoinColumn({ name: "studentId" })
+  students: Student;
 }

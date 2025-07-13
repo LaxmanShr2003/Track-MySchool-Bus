@@ -4,8 +4,9 @@ import { busRouteIdSchema, createBusRouteSchema } from "./busRoute.schema";
 import { BusRouteController } from "./busRoute.controller";
 
 export const busRouteRouter = (router: Router) => {
+  
   router.post(
-    "/busRoute",
+    "/bus-route",
     ZOD.requestParser({
       schema: createBusRouteSchema,
       type: "Body",

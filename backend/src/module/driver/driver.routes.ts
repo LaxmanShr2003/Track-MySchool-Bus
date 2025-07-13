@@ -12,6 +12,7 @@ import { driverController } from "./driver.controller";
 import path from "path";
 
 export const driverRoute = (route: Router) => {
+   route.get("/driver/unassigned", driverController.findUnAssignedDriver);
   route.post(
     "/driver",
 
@@ -89,4 +90,6 @@ export const driverRoute = (route: Router) => {
     ),
     driverController.updateDriver
   );
+
+ 
 };
